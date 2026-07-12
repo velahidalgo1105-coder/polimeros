@@ -370,7 +370,7 @@
     <section class="seccion-grafico">
         <button id="btnMostrarGrafico" class="btn-grafico">Ver Gráfico Comparativo de Temperatura de Fusión</button>
         <div id="contenedorCanvas" class="canvas-container">
-            <canvas id="graficoFusiones"></canvas>
+            <canvas id="graficoFusiones" width="750" height="350"></canvas>
         </div>
     </section>
 
@@ -640,7 +640,8 @@
                     }]
                 },
                 options: {
-                    responsive: true,
+                    responsive: false,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             position: 'top',
