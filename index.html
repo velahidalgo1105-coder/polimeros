@@ -215,10 +215,10 @@
         }
         
         #graficoFusiones {
-            display: block;
-            min-width: 750px; /* Evita que el gráfico se comprima y se vuelva diminuto */
-            width: 100%;
-            height: auto;
+            display: block !important;
+            min-width: 750px !important; /* Mantiene el ancho para el scroll lateral */
+            width: 750px !important;     /* Evita que se estire de más horizontalmente */
+            height: 350px !important;    /* OBLIGA a mantener una altura fija y legible */
         }
 
         .footer-container {
