@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muestrario de Polimeros</title>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: rgb(217, 11, 28);
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: rgb(217, 11, 28);
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #7f8c8d;
+        }
+
+        /* Buscador */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 16px;
+            border: 2px solid #bdc3c7;
+            border-radius: 30px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .search-input:focus {
+            border-color: rgb(217, 11, 28);
+            box-shadow: 0 4px 8px rgb(109, 1, 1);
+        }
+
+        /* Contenedor de Tarjetas */
+        .grid-polimeros {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Tarjeta de Polímero */
+        .card {
+            position: relative;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border-top: 5px solid rgb(217, 11, 28);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 0.8);
+        }
+
+        .polymer-title {
+            color: rgb(217, 11, 28);
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .polymer-sigla {
+            display: inline-block;
+            background: #ecb7baf5;
+            color: rgb(217, 11, 28);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .info-group {
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #7f8c8d;
+            display: block;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            color: #34495e;
+        }
+
+        /* Mensaje de no resultados */
+        .no-results {
+            text-align: center;
+            grid-column: 1 / -1;
+            color: #95a5a6;
+            font-size: 18px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        /* Diseño de la insignia del código RIC */
+        .ric-badge {
+            /* Evita que Flexbox obligue al contenedor a estirarse al ancho de la tarjeta */
+                align-self: center; 
+                
+                /* Forzamos el tamaño exacto que queremos (puedes cambiar 60px por el tamaño ideal) */
+                width: 80px !important; 
+                height: 80px !important;
+                
+                /* Reseteamos posiciones absolutas que puedan estar rompiendo el flujo */
+                position: relative !important; 
+                top: 0 !important;
+                right: 0 !important;
+                
+                /* Centrado y margen inferior para separar del título */
+                margin: 10px auto 5px auto !important; 
+                display: block !important;
+        }
+        
+        .ric-container svg {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
+
+        .ric-label {
+            font-size: 8px;
+            text-transform: uppercase;
+            margin-bottom: -2px;
+            letter-spacing: 0.5px;
+        }
+
+        .ric-number {
+            font-size: 16px;
+        }
+
+        /* Línea divisoria estilo industrial */
+        .divisor-seccion {
+            border: none;
+            border-top: 4px solid #1a1a1a; /* Línea gruesa oscura */
+            margin: 50px auto 30px auto;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* Contenedor inferior */
+        .seccion-grafico {
+            max-width: 900px;
+            margin: 0 auto 60px auto;
+            text-align: center;
+        }
+
+        /* Botón interactivo */
+        .btn-grafico {
+            background-color: rgb(217, 11, 28);
+            color: #ffffff;
+            border: none;
+            padding: 12px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.8); /* Mismo estilo de tus tarjetas */
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        .btn-grafico:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Contenedor del lienzo del gráfico */
+        .canvas-container {
+            margin-top: 30px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 0.8);
+            display: none; /* Se oculta inicialmente */
+        }
+
+        .footer-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px; /* Espacio entre el logo y el texto */
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .footer-logo img {
+            width: 160px; /* Tamaño del logo */
+            height: auto;
+            opacity: 0.8;
+            transition: transform 0.3s ease;
+        }
+
+        .footer-logo img:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+        .footer-logo img {
+            width: 120px; /* En celular lo mantenemos un poco más contenido */
+        }
+        }
+
+        @media (max-width: 768px) {
+        .footer-container {
+            flex-direction: column; /* El logo se pone arriba del texto en celulares */
+            gap: 20px;
+        }
+        
+        .footer-logo img {
+            width: 100px;
+        }
+        }
+
+        .site-footer {
+            background-color: #9b1b30;
+            color: #ffffff;
+            padding: 30px 15px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .site-footer {
+    background-color: #9b1b30;
+    color: #ffffff;
+    padding: 30px 15px;
+    text-align: center;
+    margin-top: 40px;
+    }
+
+        .site-footer h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Dos columnas en PC */
+            gap: 10px;
+            max-width: 600px;
+            margin: 15px auto;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        /* El nombre principal (tuyo) puede ocupar toda una fila abajo para resaltar */
+        .team-grid .lead {
+            grid-column: span 2;
+            font-weight: bold;
+            margin-top: 5px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 5px;
+        }
+
+        .info-universidad {
+            margin-top: 20px;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* En celulares, una sola columna si es muy estrecho */
+        @media (max-width: 480px) {
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+            .team-grid .lead {
+                grid-column: span 1;
+            }
+        }
+
+
+        .brand-title {
+            color: #ffffff;
+            font-style: italic; /* Opcional: le da un toque de marca/nombre de software */
+            opacity: 0.9;
+            border-bottom: none; /* Si el h3 anterior tenía línea abajo, a este se la quitamos */
+        }
+
+
+        .header-group {
+            display: flex;
+            flex-direction: column; /* Apila solo los títulos */
+            margin-bottom: 10px;    /* Espacio antes de "Elaborado por" */
+        }
+
+
+        .footer-content h3:first-child {
+            margin-bottom: 4px;
+        }
+
+        h3.brand-title {
+            font-size: 28px; /* Ajusta este número a tu gusto */
+            font-weight: bold;
+            display: block;  /* Asegura que se comporte como bloque */
+            margin-top: 0;    /* Elimina margen superior para que pegue con el título anterior */
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Caracterización de Polímeros</h1>
+        <p>Busca por nombre, siglas, tipo o propiedades térmicas y mecánicas o por el código RIC</p>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="buscador" class="search-input" placeholder="Ej: Polietileno, PET, Termoplástico...">
+    </div>
+
+    <main class="grid-polimeros" id="contenedor-polimeros">
+        <!-- El contenido se genera dinámicamente mediante JavaScript -->
+    </main>
+
+    <div id="sin-resultados" class="no-results">
+        No se encontraron polímeros que coincidan con la búsqueda.
+    </div>
+
+    <hr class="divisor-seccion">
+
+    <section class="seccion-grafico">
+        <button id="btnMostrarGrafico" class="btn-grafico">Ver Gráfico Comparativo de Temperatura de Fusión</button>
+        <div id="contenedorCanvas" class="canvas-container">
+            <canvas id="graficoFusiones"></canvas>
+        </div>
+    </section>
+
+    <!-- Importación de la librería para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Base de datos local con los 10 polímeros y su caracterización técnica
+        const polimeros = [
+            {
+                nombre: "Polietileno de Alta Densidad",
+                siglas: "HDPE",
+                ric: "2",
+                tipo: "Termoplástico",
+                estructura: "Lineal con pocas ramificaciones. Cadena repetitiva: -(CH2-CH2)-",
+                propiedades: "Alta resistencia al impacto, rígido, excelente resistencia química, opaco.",
+                tg: "-120 °C",
+                tm: "130 °C",
+                aplicaciones: "Envases de leche, tuberías de agua, juguetes, botellas de detergente."
+            },
+            {
+                nombre: "Polietileno de Baja Densidad",
+                siglas: "LDPE",
+                ric: "4",   
+                tipo: "Termoplástico",
+                estructura: "Altamente ramificada. Cadena repetitiva: -(CH2-CH2)-",
+                propiedades: "Muy flexible, translúcido, buena resistencia al impacto, baja resistencia térmica.",
+                tg: "-110 °C",
+                tm: "110 °C",
+                aplicaciones: "Bolsas de plástico, film transparente para alimentos, cables flexibles."
+            },
+            {
+                nombre: "Polipropileno",
+                siglas: "PP",
+                ric: "5",
+                tipo: "Termoplástico",
+                estructura: "Lineal con grupos metilo. Cadena repetitiva: -(CH2-CH(CH3))-",
+                propiedades: "Alta resistencia a la fatiga (bisagras), baja densidad, alta resistencia térmica y química.",
+                tg: "-10 °C",
+                tm: "165 °C",
+                aplicaciones: "Contenedores para microondas, tapas de botellas, jeringas médicas, fibras textiles."
+            },
+            {
+                nombre: "Policloruro de Vinilo",
+                siglas: "PVC",
+                ric: "3",
+                tipo: "Termoplástico",
+                estructura: "Amorfo con átomos de cloro. Cadena repetitiva: -(CH2-CHCl)-",
+                propiedades: "Muy versátil (puede ser rígido o flexible con plastificantes), resistente al fuego, autoextinguible.",
+                tg: "80 °C",
+                tm: "212 °C (se degrada antes)",
+                aplicaciones: "Tuberías de drenaje, perfiles de ventanas, cuero sintético, bolsas de sangre."
+            },
+            {
+                nombre: "Poliestireno",
+                siglas: "PS",
+                ric: "6",
+                tipo: "Termoplástico",
+                estructura: "Amorfo con anillos bencénicos. Cadena repetitiva: -(CH2-CH(C6H5))-",
+                propiedades: "Muy transparente, rígido, quebradizo. En su forma expandida (EPS) es excelente aislante térmico.",
+                tg: "100 °C",
+                tm: "240 °C",
+                aplicaciones: "Vasos desechables, cajas de CD, bandejas de comida (corcho blanco), carcasas."
+            },
+            {
+                nombre: "Polietileno Tereftalato",
+                siglas: "PET",
+                ric: "1",
+                tipo: "Termoplástico (Semicristalino)",
+                estructura: "Poliéster aromático. Cadena: -(O-CO-C6H4-CO-O-CH2-CH2)-",
+                propiedades: "Alta barrera contra gases (CO2), alta transparencia, ligereza, completamente reciclable.",
+                tg: "75 °C",
+                tm: "255 °C",
+                aplicaciones: "Botellas de bebidas carbonatadas, envases de alimentos, fibras textiles (poliéster)."
+            },
+            {
+                nombre: "Polimetilmetacrilato",
+                siglas: "PMMA",
+                ric: "7",
+                tipo: "Termoplástico",
+                estructura: "Amorfo, derivado acrílico. Cadena: -(CH2-C(CH3)(COOCH3))-",
+                propiedades: "Excepcional transparencia óptica (sustituto del vidrio), resistente a la intemperie y rayos UV.",
+                tg: "105 °C",
+                tm: "Amorfo (se ablanda a los 160 °C)",
+                aplicaciones: "Faros de automóviles, acuarios, mamparas protectoras, lentes de contacto rígidas."
+            },
+            {
+                nombre: "Poliamida 6,6 (Nailon)",
+                siglas: "PA 66",
+                ric: "7",
+                tipo: "Termoplástico / Fibra",
+                estructura: "Estructura cristalina con puentes de hidrógeno fuertes intercatenarios.",
+                propiedades: "Alta resistencia mecánica, gran tenacidad, excelente comportamiento al desgaste y fricción.",
+                tg: "50 °C",
+                tm: "265 °C",
+                aplicaciones: "Engranajes mecánicos, hilos de pescar, cuerdas de guitarra, airbags, alfombras."
+            },
+            {
+                nombre: "Policarbonato",
+                siglas: "PC",
+                ric: "7",
+                tipo: "Termoplástico",
+                estructura: "Amorfo con grupos carbonato en la cadena principal.",
+                propiedades: "Extrema resistencia al impacto (prácticamente irrompible), excelente transparencia y estabilidad térmica.",
+                tg: "145 °C",
+                tm: "225 °C",
+                aplicaciones: "Vidrios antibalas, cascos de seguridad, CD/DVD, techos translúcidos."
+            },
+            {
+                nombre: "Acrilonitrilo Butadieno Estireno",
+                siglas: "ABS",
+                ric: "7",
+                tipo: "Termoplástico (Copolímero)",
+                estructura: "Terpolímero amorfo compuesto por tres monómeros distintos mediante injertos.",
+                propiedades: "Excelente tenacidad (muy resistente a impactos severos), rigidez estructural, buena procesabilidad, fácil de pintar.",
+                tg: "105 °C",
+                tm: "Amorfo (rango de ablandamiento reológico a partir de los 200 °C)",
+                aplicaciones: "Bloques de LEGO, carcasas de electrodomésticos, piezas automotrices, filamento para impresión 3D (FDM)."
+            }
+        ];
+
+        const contenedor = document.getElementById('contenedor-polimeros');
+        const buscador = document.getElementById('buscador');
+        const mensajeSinResultados = document.getElementById('sin-resultados');
+
+        // Función para renderizar las tarjetas en pantalla
+        function mostrarPolimeros(lista) {
+            contenedor.innerHTML = '';
+            
+            if (lista.length === 0) {
+                mensajeSinResultados.style.display = 'block';
+                return;
+            }
+            
+            mensajeSinResultados.style.display = 'none';
+
+            lista.forEach(p => {
+                let colorRIC = "";
+                const numeroRIC = parseInt(p.ric); // Convertimos el texto a número para evaluar rangos
+
+                if (numeroRIC >= 1 && numeroRIC <= 2) {
+                    colorRIC = "#27ae60"; // Verde (Alta reciclabilidad)
+                } else if (numeroRIC >= 3 && numeroRIC <= 5) {
+                    colorRIC = "#f39c12"; // Amarillo / Naranja (Reciclabilidad media/compleja)
+                } else if (numeroRIC >= 6 && numeroRIC <= 7) {
+                    colorRIC = "#c0392b"; // Rojo (Baja o nula reciclabilidad / Otros)
+                }
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+
+                    <div class="ric-badge">
+                        <svg viewBox="0 0 100 100" width="100%" height="100%">
+                            <!-- Ruta matemática que dibuja el triángulo clásico de flechas (RIC) -->
+                            <path d="M50,12 L85,72 L15,72 Z" fill="none" stroke="${colorRIC}" stroke-width="8" stroke-linejoin="round"/>
+                            <path d="M47,7 L53,17 L43,17 Z" fill="${colorRIC}"/>
+                            <path d="M88,68 L77,73 L82,63 Z" fill="${colorRIC}"/>
+                            <path d="M12,68 L17,58 L22,67 Z" fill="${colorRIC}"/>
+                            
+                            <!-- Número dinámico centrado dentro del triángulo -->
+                            <text x="50" y="55" font-size="28" font-family="sans-serif" font-weight="bold" text-anchor="middle" fill="${colorRIC}">${p.ric}</text>
+                            
+                            <!-- Siglas pequeñas debajo del triángulo -->
+                            <text x="50" y="92" font-size="14" font-family="sans-serif" font-weight="bold" text-anchor="middle" fill="#7f8c8d">${p.siglas}</text>
+                        </svg>
+                    </div>
+                    <h2 class="polymer-title" style="padding-right: 40px;">${p.nombre}</h2>
+                    <div><span class="polymer-sigla">${p.siglas}</span></div>
+                    
+                    <div class="info-group">
+                        <span class="info-label">Clasificación</span>
+                        <span class="info-value">${p.tipo}</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Estructura Química</span>
+                        <span class="info-value">${p.estructura}</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Propiedades Clave</span>
+                        <span class="info-value">${p.propiedades}</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Transición Vítrea (Tg) / Fusión (Tm)</span>
+                        <span class="info-value"><strong>Tg:</strong> ${p.tg} | <strong>Tm:</strong> ${p.tm}</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Aplicaciones Comunes</span>
+                        <span class="info-value">${p.aplicaciones}</span>
+                    </div>
+                `;
+                contenedor.appendChild(card);
+            });
+        }
+
+        // Evento del buscador para filtrar en tiempo real
+        buscador.addEventListener('input', (e) => {
+            const termino = e.target.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Ignora acentos
+            
+            const filtrados = polimeros.filter(p => {
+                const nombreNorm = p.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                const propiedadesNorm = p.propiedades.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                const aplicacionesNorm = p.aplicaciones.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+                if (/^[1-7]$/.test(termino)) {
+                return p.ric === termino;
+        }
+
+                return nombreNorm.includes(termino) || 
+                       p.siglas.toLowerCase().includes(termino) || 
+                       p.tipo.toLowerCase().includes(termino) ||
+                       propiedadesNorm.includes(termino) ||
+                       aplicacionesNorm.includes(termino);
+            });
+            
+            mostrarPolimeros(filtrados);
+        });
+
+        // Carga inicial de datos
+        mostrarPolimeros(polimeros);
+
+        // Lógica interactiva para el gráfico térmico
+        const btnGrafico = document.getElementById('btnMostrarGrafico');
+        const contenedorCanvas = document.getElementById('contenedorCanvas');
+        let chartInstancia = null; // Guardará la instancia del gráfico
+
+        btnGrafico.addEventListener('click', () => {
+            // Alternar visibilidad del contenedor
+            if (contenedorCanvas.style.display === 'block') {
+                contenedorCanvas.style.display = 'none';
+                btnGrafico.textContent = 'Ver Gráfico Comparativo de Temperatura de Fusión';
+                return;
+            }
+
+            contenedorCanvas.style.display = 'block';
+            btnGrafico.textContent = 'Ocultar Gráfico Comparativo';
+
+            // Si el gráfico ya fue creado antes, no lo duplicamos
+            if (chartInstancia !== null) return;
+
+            // Extraemos los datos dinámicamente de tu constante 'polimeros'
+            const etiquetas = polimeros.map(p => p.siglas);
+            
+            // Convertimos los textos de 'tm' a valores numéricos (ej: "130 °C" -> 130)
+            const valoresTm = polimeros.map(p => {
+                const numero = parseInt(p.tm);
+                return isNaN(numero) || p.tm.toLowerCase().includes('amorfo') ? 0 : numero; 
+                // Los polímeros puramente amorfos (como ABS o PMMA) se marcan con 0 al no poseer Tm cristalina exacta.
+            });
+
+            // Configuración y renderizado de Chart.js
+            const ctx = document.getElementById('graficoFusiones').getContext('2d');
+            chartInstancia = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: etiquetas,
+                    datasets: [{
+                        label: 'Temperatura de Fusión (°C)',
+                        data: valoresTm,
+                        borderColor: '#D90B1C',
+                        backgroundColor: 'rgba(217, 11, 28, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#FF7C80',
+                        pointBorderColor: '#D90B1C',
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        tension: 0.2 // Suaviza ligeramente la línea
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Temperatura en Grados Celsius (°C)',
+                                font: { weight: 'bold' }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Polímeros (Siglas)',
+                                font: { weight: 'bold' }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    
+    </script>   
+    
+    <footer class="site-footer">
+        <div class="container">
+
+            <div class="footer-logo">
+                <img src="Logo_UNCP.png" alt="Logo UNCP">
+            </div>
+
+            <div class="footer-content">
+                <div class="header-group">
+                    <h3>Muestrario de Polimeros</h3>
+                    <h3 class="brand-title">POLIMEROS DE INGENIERÍA</h3>
+                </div>
+
+                <p class="label">Elaborado por:</p>
+                
+                <div class="team-grid">
+                    <span>Asto Antonio Elvis</span>
+                    <span>Barrientos Mayta Jhem Jhasira</span>
+                    <span>Muñoz Mosquera Jean Carlos</span>
+                    <span>Saenz Rios Ronald Lenin</span>
+                    <span class="lead">Jefferson Eduardo Vela Hidalgo</span>
+                </div>
+
+                <div class="info-universidad">
+                    <p>Curso: Ingeniería de Materiales II - Ciclo IX</p>
+                    <p><strong>Universidad Nacional del Centro del Perú (UNCP)</strong></p>
+                    <p>© 2026 - Huancayo, Perú</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
