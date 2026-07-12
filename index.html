@@ -212,6 +212,11 @@
             overflow-x: auto; 
             -webkit-overflow-scrolling: touch;
             overflow-y: hidden;
+
+            width: max-content;       /* Obliga a la tarjeta a cerrarse justo al tamaño del gráfico */
+            max-width: 100%;          /* Evita que se salga de la pantalla en pantallas medianas */
+            margin-left: auto;        /* Centra la tarjeta horizontalmente en la laptop */
+            margin-right: auto;       /* Centra la tarjeta horizontalmente en la laptop */
         }
         
         #graficoFusiones {
